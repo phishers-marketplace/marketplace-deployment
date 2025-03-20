@@ -1,0 +1,6 @@
+[submodule "marketplace-api"]
+	path = marketplace-api
+	url = https://github.com/phishers-marketplace/marketplace-api.git
+[submodule "marketplace-frontend"]
+	path = marketplace-frontend
+	url = https://github.com/phishers-marketplace/marketplace-frontend.git
