@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: marketplace-nginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - marketplace-network
+
+  api:
+    build:
+      context: ./marketplace-api
+      dockerfile: Dockerfile
+    container_name: marketplace-api
+    restart: always
+    expose:
+      - "9000"
+    env_file:
+      - ./marketplace-api/.env
+    volumes:
+      - ./marketplace-api:/app
+    depends_on:
+      - mongodb
+    networks:
+      - marketplace-network
+
+  frontend:
+    build:
+      context: ./marketplace-frontend
+      dockerfile: Dockerfile
+    container_name: marketplace-frontend
+    restart: always
+    expose:
+      - "3000"
+    env_file:
+      - ./marketplace-frontend/.env
+    networks:
+      - marketplace-network
+
+  mongodb:
+    image: mongo:6.0
+    container_name: marketplace-mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    expose:
+      - "27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./marketplace-api/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    env_file:
+      - ./marketplace-api/.env
+    networks:
+      - marketplace-network
+
+networks:
+  marketplace-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    name: marketplace-mongodb-data 

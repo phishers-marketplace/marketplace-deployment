@@ -1,0 +1,12 @@
+# macOS Finder files
+.DS_Store
+Thumbs.db
+
+# SSL certificates
+nginx/ssl/
+
+# Docker volumes
+mongodb_data/
+
+# IDE files
+.idea/
